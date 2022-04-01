@@ -89,3 +89,17 @@ void UNetComponent::DeserializeData(CGameBuffer* pData)
 		pCar->SetActorTransform(vTrans);
 	}
 }
+
+unsigned int UNetComponent::GetID()
+{
+    return m_uID;
+}
+
+void UNetComponent::DestroyCar(unsigned char _car)
+{
+	CGameBuffer buffer;
+	Net::NetMessageType typeMessage = Net::NetMessageType::DESTROY_TRAP;
+	buffer.write(typeMessage);
+	buffer.write(m_uID);
+	m_pManager->send(&buffer, true);
+}

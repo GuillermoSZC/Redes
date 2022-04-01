@@ -90,6 +90,13 @@ void CGameNetMgr::dataPacketReceived(Net::CPacket* packet)
 		pCar->GetNetComponent()->DeserializeData(&oData);
 	}
 	break;
+	case Net::DESTROY_TRAP:
+	{
+		unsigned int id;
+		oData.read(id);
+		// @TODO:
+	}
+	break;
 	default:
 		break;
 	}

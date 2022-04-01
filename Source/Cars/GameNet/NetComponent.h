@@ -36,6 +36,10 @@ public:
 	void DeserializeData(CGameBuffer* pData);
 
 	void SetInput(const FVector2D& _vInput) { m_vMovementInput = _vInput; }
+	
+	unsigned int GetID();
+
+	void DestroyCar(unsigned char _car);
 
 private:
 	Net::CManager* m_pManager;

@@ -72,7 +72,8 @@ namespace Net
 		MAP_LOADED,
 		PLAYER_LOADED,
 		ENTITY_MSG,
-		ASSIGNED_ID
+		ASSIGNED_ID,
+		DESTROY_TRAP
 	};
 
 
