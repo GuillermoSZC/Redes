@@ -31,11 +31,13 @@ ATrap::ATrap()
 void ATrap::BeginPlay()
 {
     Super::BeginPlay();
-    temp.X = 0.3f; // @WARN!
-    temp.Y = 0.3f; // @WARN!
-    temp.Z = 0.3f; // @WARN!
+    // Tamaño de la trampa
+    FVector trapSize;
+    trapSize.X = 1.f;
+    trapSize.Y = 1.f;
+    trapSize.Z = 1.f;
 
-    SetActorScale3D(temp);
+    SetActorScale3D(trapSize);
     SetActorEnableCollision(false);
 }
 
@@ -57,12 +59,12 @@ void ATrap::Tick(float DeltaTime)
             {
                 float dist = GetDistanceTo(car);
                 unsigned char otherCar = car->GetNetComponent()->GetID();
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::SanitizeFloat(dist));
-                if (dist < 22.f && otherCar != trapID)
+                // Si la distancia entre la trampa y el otro coche es menor que 60..
+                if (dist < 60.f && otherCar != trapID)
                 {
                     unsigned int carID = car->GetNetComponent()->GetID();
-                    netComponent->DestroyCar(otherCar);
-                    // car->GetCarMovementComponent()->
+                    netComponent->DestroyTrap(otherCar);
+                    car->GetCarMovementComponent()->HitTrap();
                     Destroy();
                 }
             }
@@ -70,33 +72,12 @@ void ATrap::Tick(float DeltaTime)
     }
 }
 
-UNetComponent* ATrap::GetNetComponent()
-{
-    return netComponent;
-}
-
-UStaticMeshComponent* ATrap::GetMesh()
-{
-    return meshComponent;
-}
-
 unsigned char ATrap::GetTrapID()
 {
     return trapID;
 }
 
-void ATrap::SetNetComponent(UNetComponent* _netComponent)
+void ATrap::SetTrapID(unsigned char _id)
 {
-    netComponent = _netComponent;
+    trapID = _id;
 }
-
-void ATrap::SetMesh(UStaticMeshComponent* _meshComponent)
-{
-    meshComponent = _meshComponent;
-}
-
-void ATrap::SetTrapID(unsigned char _trapID)
-{
-    trapID = _trapID;
-}
-

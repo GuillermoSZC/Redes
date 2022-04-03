@@ -16,36 +16,27 @@ class CARS_API ATrap : public AActor
 
 public:
     ATrap();
-    ~ATrap() { UE_LOG(LogTemp, Log, TEXT("Trap deleted")); }
 
 public:
 
+private:
+    unsigned char trapID;
 
 protected:
     virtual void BeginPlay() override;
-    // @TODO: private
+
     UPROPERTY(EditAnywhere)
         UStaticMeshComponent* meshComponent;
 
     UPROPERTY(EditAnywhere)
         UNetComponent* netComponent;
 
-private:
-    unsigned char trapID;
-    FVector temp; // @WARN!
-     // @WARN!
-
 public:
     virtual void Tick(float DeltaTime) override;
 
-#pragma region GETTERS_&_SETTERS
-    UNetComponent* GetNetComponent();
-    UStaticMeshComponent* GetMesh();
-    unsigned char GetTrapID();
+    UNetComponent* GetNetComponent() { return netComponent; }
 
-    void SetNetComponent(UNetComponent* _netComponent);
-    void SetMesh(UStaticMeshComponent* _meshComponent);
-    void SetTrapID(unsigned char _trapID);
-#pragma endregion
+    unsigned char GetTrapID();
+    void SetTrapID(unsigned char _id);
 
 };

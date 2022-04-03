@@ -8,12 +8,14 @@
 #include "CarsGameInstance.h"
 #include "Game/Car.h"
 #include "GameNet/NetComponent.h"
+#include "Game/Trap.h"
 
 CGameNetMgr::CGameNetMgr()
 {
 	Net::CManager::Init();
 	m_pManager = Net::CManager::getSingletonPtr();
 	m_pManager->addObserver(this);
+	numTraps = 0;
 }
 
 CGameNetMgr::CGameNetMgr(UCarsGameInstance* _pOwner)
@@ -22,6 +24,7 @@ CGameNetMgr::CGameNetMgr(UCarsGameInstance* _pOwner)
 	Net::CManager::Init();
 	m_pManager = Net::CManager::getSingletonPtr();
 	m_pManager->addObserver(this);
+	numTraps = 0;
 }
 
 CGameNetMgr::~CGameNetMgr()
@@ -90,11 +93,33 @@ void CGameNetMgr::dataPacketReceived(Net::CPacket* packet)
 		pCar->GetNetComponent()->DeserializeData(&oData);
 	}
 	break;
+    case Net::TRAP_MSG:
+    {
+        unsigned int id;
+		oData.read(id);
+		ATrap* otherTrap = traps[id];
+		if (!IsValid(otherTrap))
+		{
+			DestroyTrap(id);
+		}
+        
+		bool isSpawn;
+		oData.read(isSpawn);
+		FVector position;
+		oData.read(position);
+		if (isSpawn == true && otherTrap == nullptr)
+		{
+			CreateTrap(id, position);
+		}
+    }
+    break;
 	case Net::DESTROY_TRAP:
 	{
 		unsigned int id;
 		oData.read(id);
-		// @TODO:
+		ATrap* otherTrap = traps[id];
+		otherTrap->Destroy();
+		traps[id] = nullptr;
 	}
 	break;
 	default:
@@ -114,6 +139,11 @@ void CGameNetMgr::connectionPacketReceived(Net::CPacket* packet)
 void CGameNetMgr::disconnectionPacketReceived(Net::CPacket* packet)
 {
 
+}
+
+void CGameNetMgr::DestroyTrap(unsigned int _id)
+{
+	traps[_id] = nullptr;
 }
 
 void CGameNetMgr::CreateCar(unsigned int _uClient, FVector _vPos)
@@ -138,5 +168,31 @@ void CGameNetMgr::CreateCar(unsigned int _uClient, FVector _vPos)
 				pPC->Possess(pCar);
 			}
 		}
+	}
+}
+
+void CGameNetMgr::CreateTrap(unsigned int _id, FVector _position)
+{
+	FActorSpawnParameters spawnParams;
+	spawnParams.Name = FName("Trap", numTraps);
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ATrap* trap = m_pCarsGameInstance->GetWorld()->SpawnActor<ATrap>(_position, FRotator::ZeroRotator, spawnParams);
+
+	if (trap)
+	{
+		numTraps++;
+		trap->GetNetComponent()->SetID(_id);
+		traps[_id] = trap;
+		trap->SetTrapID(_id);
+	}
+	if (m_pManager->getID() == Net::ID::SERVER)
+	{
+		CGameBuffer buffer;
+		Net::NetMessageType messageType = Net::NetMessageType::TRAP_MSG;
+		buffer.write(messageType);
+		buffer.write(_id);
+		buffer.write(true);
+		buffer.write(_position);
+		m_pManager->send(&buffer, true);
 	}
 }

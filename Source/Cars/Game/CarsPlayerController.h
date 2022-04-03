@@ -12,11 +12,11 @@
 UCLASS()
 class CARS_API ACarsPlayerController : public APlayerController
 {
-  GENERATED_BODY()
+    GENERATED_BODY()
 
     ACarsPlayerController(const class FObjectInitializer& ObjectInitializer);
 
 protected:
-  /** Called when the game starts. */
-  virtual void BeginPlay() override;
+    /** Called when the game starts. */
+    virtual void BeginPlay() override;
 };

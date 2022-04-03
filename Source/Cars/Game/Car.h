@@ -30,9 +30,7 @@ protected:
     //Input functions
     void Move(float AxisValue);
     void Turn(float AxisValue);
-
-
-
+    void SpawnTrap();
 
 protected:
     //Mesh
@@ -44,6 +42,5 @@ protected:
         UNetComponent* m_pNet;
     //Input variables
     FVector2D m_vMovementInput = FVector2D::ZeroVector;
-
 
 };

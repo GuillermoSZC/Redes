@@ -73,6 +73,7 @@ namespace Net
 		PLAYER_LOADED,
 		ENTITY_MSG,
 		ASSIGNED_ID,
+		TRAP_MSG,
 		DESTROY_TRAP
 	};
 
